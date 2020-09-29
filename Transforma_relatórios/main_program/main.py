@@ -4,7 +4,6 @@ import kivy
 kivy.require('1.11.1')
 
 import os
-import win32timezone
 
 from kivy.app import App
 from kivy.lang.builder import Builder
@@ -15,7 +14,7 @@ from tkinter import filedialog as dlg
 
 # CARREGANDO ARQUIVO .KV COM ENCODING UTF-8
 
-bld = Builder.load_string(open(r"X:\7 TI - PROGRAMAS\PYTHON\Transforma_relatórios\main_program\design.kv", 
+bld = Builder.load_string(open(r"Z:\7 TI - PROGRAMAS\PYTHON\Transforma_relatórios\main_program\design.kv", 
                                 encoding="utf-8").read(), rulesonly=True)
 
 # CLASSES DA APLICAÇÃO
