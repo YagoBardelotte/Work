@@ -32,16 +32,20 @@ class Principal(Screen):
         root = Tk()
         root.withdraw()
         opcoes = {'initialdir': '', 'title': 'Caminho para Balancete'}
-        caminho = os.path.dirname(dlg.askopenfilename(**opcoes))
+        caminho = os.path.abspath(dlg.askopenfilename(**opcoes))
+        filename = caminho.split('\\')
         self.ids.cam_balancete.text = caminho
+        self.ids.nome_balancete.text = filename[-1]
     
     def get_path2(self):
 
         root = Tk()
         root.withdraw()
         opcoes = {'initialdir': '', 'title': 'Caminho para Relatório'}
-        caminho = os.path.dirname(dlg.askopenfilename(**opcoes))
+        caminho = os.path.abspath(dlg.askopenfilename(**opcoes))
+        filename = caminho.split('\\')
         self.ids.cam_relatorio.text = caminho
+        self.ids.nome_relatorio.text = filename[-1]
     
     def iniciando(self):
 
@@ -55,15 +59,15 @@ class Principal(Screen):
         relatorio_name = self.ids.nome_relatorio.text
         relatorio_dir = self.ids.cam_relatorio.text
         cod_conta = self.ids.conta.text
-
+        
         if balancete_name == '' or balancete_dir == '' or relatorio_name == '' or relatorio_dir == '' or cod_conta == '':
             self.ids.mensagem.color = 1,0,0,1
             self.ids.mensagem.font_size = 15
             self.ids.mensagem.bold = True
             self.ids.mensagem.text = 'ATENÇÃO! TODOS OS CAMPOS SÃO DE PREENCHIMENTO OBRIGATÓRIO'
 
-        else:
-            pagamentos(balancete_dir, relatorio_dir, balancete_name, relatorio_name, cod_conta)
+        else:            
+            pagamentos(balancete_dir, relatorio_dir, cod_conta)
             self.ids.mensagem.text = "Arquivo salvo!"
         
     def limpeza(self):

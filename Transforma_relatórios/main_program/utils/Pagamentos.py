@@ -1,6 +1,6 @@
 #%%
 
-def pagamentos(balancete_dir, relatorio_dir, balancete_name, relatorio_name, cod_conta):
+def pagamentos(balancete_dir, relatorio_dir, cod_conta):
 
     print('IMPORTANDO AS BIBLIOTECAS NECESSÁRIAS...\n')
 
@@ -8,16 +8,21 @@ def pagamentos(balancete_dir, relatorio_dir, balancete_name, relatorio_name, cod
     import pandas as pd
     from utils import utilitarios
 
+    print(balancete_dir)
+
     # RODANDO TODO O PROCESSO DE MANIPULAÇÃO E PREENCHIMENTO DOS ARQUIVOS E EXPORTANDO NO FORMATO .XLSX
+
 
     print('IMPORTANDO AS TABELAS...\n')
     
-    fornec = pd.read_csv(f'{balancete_dir}/{balancete_name}.csv', sep=";",encoding = 'iso-8859-1')
-    fin = pd.read_csv(f'{relatorio_dir}/{relatorio_name}.csv', sep = ';', encoding = 'iso-8859-1')
+    fornec = pd.read_csv(f'{balancete_dir}', sep=";",encoding = 'iso-8859-1')
+    fin = pd.read_csv(f'{relatorio_dir}', sep = ';', encoding = 'iso-8859-1')
+
+    balancete_name = balancete_dir.split('/')
     
-    if '_coop' in balancete_name or '_rede' in balancete_name:
+    if '_coop' in balancete_name[-1] or '_rede' in balancete_name[-1]:
         
-        utilitarios.teste_coop_rede(balancete_name, fin, fornec, cod_conta, relatorio_dir)
+        utilitarios.teste_coop_rede(balancete_name[-1], fin, fornec, cod_conta, relatorio_dir)
     
     else:
         

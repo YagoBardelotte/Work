@@ -3,6 +3,7 @@
 
 import pandas as pd
 import xlsxwriter
+import os
 
 #%%
 #FUNÇÃO QUE RETIRA OS CARACTERES ESPECIAIS DOS NOMES DOS FORNECEDORES
@@ -225,7 +226,9 @@ def separa_contas(df, loja, fornec, x, relatorio_dir):
     
     # CRIA UM ARQUIVO XLSX PARA CADA LOJA
 
-    with pd.ExcelWriter((f'{relatorio_dir}/Pgto_{loja}.xlsx'), engine = 'xlsxwriter', date_format='DD-MM-YYYY') as df_limpo: # pylint: disable=abstract-class-instantiated
+    path = os.path.dirname(relatorio_dir)
+
+    with pd.ExcelWriter((f'{path}/Pgto_{loja}.xlsx'), engine = 'xlsxwriter', date_format='DD-MM-YYYY') as df_limpo: # pylint: disable=abstract-class-instantiated
 
         print("PREPARANDO O DF PARA PREENCHER AS COLUNAS DE CRÉDITO E DÉBITO...\n")
         
@@ -371,6 +374,8 @@ def exporta(fin, data_dir):
     
     # EXPORTAR PARA NOVO ARQUIVO
 
-    fin_limpo = pd.ExcelWriter(f'{data_dir}/arq_limpo.xlsx', engine = 'xlsxwriter') # pylint: disable=abstract-class-instantiated
+    path = os.path.dirname(data_dir)
+
+    fin_limpo = pd.ExcelWriter(f'{path}/arq_limpo.xlsx', engine = 'xlsxwriter') # pylint: disable=abstract-class-instantiated
     fin.to_excel(fin_limpo, index = False,  float_format="%.2f")
     fin_limpo.save()
