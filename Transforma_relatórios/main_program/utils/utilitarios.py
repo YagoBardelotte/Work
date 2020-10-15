@@ -317,7 +317,7 @@ def separa_contas(df, loja, fornec, x, relatorio_dir):
         
         #LIMPA O RELATÓRIO FINANCEIRO MANTENDO SOMENTE AS COLUNAS ESSENCIAIS
         
-        lista = ['importação','Data','Valor','Juros','Descontos','Debito','Credito','Historico','Historico2','Historico3']
+        lista = ['importação','Data','Valor','Juros','Descontos','Debito','Credito','Banco','Nome Banco','Historico','Historico2','Historico3']
         limpa(df,lista)
         
         #SALVA O RELATÓRIO FINANCEIRO

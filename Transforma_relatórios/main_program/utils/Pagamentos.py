@@ -8,10 +8,9 @@ def pagamentos(balancete_dir, relatorio_dir, cod_conta):
     import pandas as pd
     from utils import utilitarios
 
-    print(balancete_dir)
+    # print(balancete_dir)
 
     # RODANDO TODO O PROCESSO DE MANIPULAÇÃO E PREENCHIMENTO DOS ARQUIVOS E EXPORTANDO NO FORMATO .XLSX
-
 
     print('IMPORTANDO AS TABELAS...\n')
     
