@@ -14,8 +14,10 @@ from tkinter import filedialog as dlg
 
 # CARREGANDO ARQUIVO .KV COM ENCODING UTF-8
 
-bld = Builder.load_string(open(r"Z:\7 TI - PROGRAMAS\PYTHON\Transforma_relatórios\main_program\design.kv", 
-                                encoding="utf-8").read(), rulesonly=True)
+BASE_DIR = os.getcwd()
+DESIGN = os.path.join(BASE_DIR + '\design.kv')
+
+bld = Builder.load_string(open(DESIGN, encoding="utf-8").read(), rulesonly=True)
 
 # CLASSES DA APLICAÇÃO
 
