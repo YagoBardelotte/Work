@@ -3,7 +3,8 @@
 import kivy
 kivy.require('1.11.1')
 
-import os
+import warnings
+warnings.filterwarnings('ignore')
 
 from kivy.app import App
 from kivy.lang.builder import Builder

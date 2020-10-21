@@ -1,14 +1,10 @@
 #%%
 
+import xlsxwriter
+import pandas as pd
+from utils import utilitarios
+
 def pagamentos(balancete_dir, relatorio_dir, cod_conta):
-
-    print('IMPORTANDO AS BIBLIOTECAS NECESSÁRIAS...\n')
-
-    import xlsxwriter
-    import pandas as pd
-    from utils import utilitarios
-
-    # print(balancete_dir)
 
     # RODANDO TODO O PROCESSO DE MANIPULAÇÃO E PREENCHIMENTO DOS ARQUIVOS E EXPORTANDO NO FORMATO .XLSX
 

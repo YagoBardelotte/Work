@@ -5,6 +5,9 @@ import pandas as pd
 import xlsxwriter
 import os
 
+import warnings
+warnings.filterwarnings('ignore')
+
 #%%
 #FUNÇÃO QUE RETIRA OS CARACTERES ESPECIAIS DOS NOMES DOS FORNECEDORES
 
