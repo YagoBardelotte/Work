@@ -13,7 +13,7 @@ def pagamentos(balancete_dir, relatorio_dir, cod_conta):
     fornec = pd.read_csv(f'{balancete_dir}', sep=";",encoding = 'iso-8859-1')
     fin = pd.read_csv(f'{relatorio_dir}', sep = ';', encoding = 'iso-8859-1')
 
-    balancete_name = balancete_dir.split('/')
+    balancete_name = balancete_dir.split('\\')
     
     if '_coop' in balancete_name[-1] or '_rede' in balancete_name[-1]:
         

@@ -179,7 +179,7 @@ def preenche(fornec, fin):
 
 def prep_arq(df, balancete_name):
 
-    if balancete_name.endswith('coop'):
+    if balancete_name.endswith('_coop.csv'):
 
         CI_LOJA_01_coop = df.loc[(df['Loja']) == 'CI LOJA 01']
         CI_LOJA_04_coop = df.loc[(df['Loja']) == 'CI LOJA 04']
