@@ -110,7 +110,7 @@ def manipulação(fin, cod):
     print('\n')
     
     for i in range(len(fin['Nome Banco'])):
-        if fin['Nome Banco'][i] not in ['CAIXA LETICIA','DANIELA','CAIXA GERENCIAL','COFRE']:
+        if fin['Nome Banco'][i] not in ['CAIXA LETICIA','DANIELA','CAIXA GERENCIAL','COFRE', 'LIVRO CAIXA - ARCAL']:
             fin['CREDITO'][i] = x
         else:
             fin['CREDITO'][i] = 5
@@ -155,7 +155,6 @@ def preenche(fornec, fin):
     
     lista = ['BRADESCO SA','BANCO COOPERATIVO SICRED SA','CAIXA ECONOMICA FEDERAL SA',
              'COMPANHIA PAULSTA DE FORCA ELUZ CPFL','VR BENEF E SERV DE PROCESSAMENTO LTDA',
-             'ARCAL SUPERMERCADO LTDA','ARCAL RESCISAO E PROCESSOS','ARLINDO CALSA FILHO',
              'BANCO DO BRASIL SA','MINISTERIO DA FAZENDA','SUPERMERCADO UNION',
              'COOPIDEAL SUPERMERCADOS EIRELI','REDE LOCAL']
 
@@ -320,7 +319,7 @@ def separa_contas(df, loja, fornec, x, relatorio_dir):
         
         #LIMPA O RELATÓRIO FINANCEIRO MANTENDO SOMENTE AS COLUNAS ESSENCIAIS
         
-        lista = ['importação','Data','Valor','Juros','Descontos','Debito','Credito','Banco','Nome Banco','Historico','Historico2','Historico3']
+        lista = ['importação','Data','Valor','Juros','Descontos','Debito','Credito','Nome Banco','Historico','Historico2','Historico3']
         limpa(df,lista)
         
         #SALVA O RELATÓRIO FINANCEIRO
