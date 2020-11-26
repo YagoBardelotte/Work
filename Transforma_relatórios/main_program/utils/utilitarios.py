@@ -4,6 +4,7 @@
 import pandas as pd
 import xlsxwriter
 import os
+import re
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -48,7 +49,7 @@ def limpa(df,lista):
     INPUT: RECEBE O DF E A LISTA DE COLUNAS ESSENCIAIS
     OUTPUT: RETORNA O DF SOMENTE COM AS COLUNAS ESSENCIAIS
     '''
-    
+
     for i in df:
         if i not in lista:
             df.drop([i], axis = 1, inplace = True)
@@ -66,23 +67,14 @@ def manipulação(fin, cod):
 
     colunas = fin.columns
 
-    if 'Data Pagamento' in colunas:
+    for i in colunas:
+        match = re.match('Data ', i)
+        if match and i not in ["Data Entrada", "Data Emissão"]:
+            fin['Data Pagamento'] = fin[i]
+            fin.drop(i, axis=1, inplace=True)
+            break
 
-        x = 'Data Pagamento'
-        lista = ['Razão Social','Valor Líquido', 'Valor Abatimento', 'Valor Acréscimo', x,'Observação','Nome Banco','Tipo Entrada', 'Banco', 'Valor Abatimento', 'Valor Acréscimo']
-        
-        fin[x] = fin[x].str.slice(stop = 10)
-        fin.sort_values(by = ['Razão Social'], inplace = True)
-        fin.reset_index(drop = True, inplace = True)
-
-    elif 'Data Vencimento' in colunas:
-
-        x = 'Data Vencimento'
-        lista = ['Razão Social','Valor Líquido', 'Valor Abatimento', 'Valor Acréscimo', x,'Observação','Nome Banco','Tipo Entrada', 'Banco', 'Valor Abatimento', 'Valor Acréscimo']
-
-        fin[x] = fin[x].str.slice(stop = 10)
-        fin.sort_values(by = ['Razão Social'], inplace = True)
-        fin.reset_index(drop = True, inplace = True)
+    lista = ['Razão Social','Valor Líquido', 'Valor Abatimento', 'Valor Acréscimo', 'Data Pagamento', 'Observação','Nome Banco','Tipo Entrada', 'Banco']
 
     limpa(fin, lista)
     fin.fillna('', inplace = True)
@@ -91,8 +83,12 @@ def manipulação(fin, cod):
 
     fun = lambda x: float(x.replace(".","").replace(",","."))
     fin["Valor Líquido"] = fin["Valor Líquido"].apply(fun)
-    fin["Valor Abatimento"] = fin["Valor Abatimento"].apply(fun)
-    fin["Valor Acréscimo"] = fin["Valor Acréscimo"].apply(fun)
+
+    try:
+        fin["Valor Abatimento"] = fin["Valor Abatimento"].apply(fun)
+        fin["Valor Acréscimo"] = fin["Valor Acréscimo"].apply(fun)
+    except KeyError:
+        pass
 
     # RETIRA DA DATA O DIA DA SEMANA E SUBSTITUI A COLUNA NÃO FORMATADA
 
@@ -103,17 +99,20 @@ def manipulação(fin, cod):
     # CRIA COLUNAS DE DÉBITO E CRÉDITO E PREENCHE COM A CONTA DE DUPLICATAS A COMPENSAR
 
     fin['DEBITO'] = ""
-    fin['CREDITO'] = ''
+    fin['CREDITO'] = ""
 
     print('INSERINDO A CONTA CONTÁBIL DE DUPLICATAS PAGAS A COMPENSAR:')
     x = int(cod)
     print('\n')
-    
-    for i in range(len(fin['Nome Banco'])):
-        if fin['Nome Banco'][i] not in ['CAIXA LETICIA','DANIELA','CAIXA GERENCIAL','COFRE', 'LIVRO CAIXA - ARCAL']:
-            fin['CREDITO'][i] = x
-        else:
-            fin['CREDITO'][i] = 5
+
+    try:
+        for i in range(len(fin['Nome Banco'])):
+            if fin['Nome Banco'][i] not in ['CAIXA LETICIA','DANIELA','CAIXA GERENCIAL','COFRE', 'LIVRO CAIXA - ARCAL']:
+                fin['CREDITO'][i] = x
+            else:
+                fin['CREDITO'][i] = 5
+    except KeyError:
+        fin['CREDITO'] = x
 
 #%%
 #FUNÇÃO QUE PREENCHE O RELATÓRIO FINANCEIRO COM OS CÓDIGOS DOS FORNECEDORES
