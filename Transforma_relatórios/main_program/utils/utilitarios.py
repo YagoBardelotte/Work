@@ -71,7 +71,6 @@ def manipulação(fin, cod):
     for i in colunas:
         match = re.match('Data ', i)
         if match == True and i not in ["Data Entrada", "Data Emissão", "Data Vencimento", "Data Pagto Contábil"]:
-            print(match)
             fin['Data Pagamento'] = fin[i]
             fin.drop(i, axis=1, inplace=True)
             break
