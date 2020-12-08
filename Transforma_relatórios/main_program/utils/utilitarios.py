@@ -5,6 +5,7 @@ import pandas as pd
 import xlsxwriter
 import os
 import re
+import logging
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -69,7 +70,8 @@ def manipulação(fin, cod):
 
     for i in colunas:
         match = re.match('Data ', i)
-        if match and i not in ["Data Entrada", "Data Emissão"]:
+        if match == True and i not in ["Data Entrada", "Data Emissão", "Data Vencimento", "Data Pagto Contábil"]:
+            print(match)
             fin['Data Pagamento'] = fin[i]
             fin.drop(i, axis=1, inplace=True)
             break
