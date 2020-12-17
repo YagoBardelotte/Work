@@ -1,11 +1,11 @@
 #%%
 # BIBLIOTECAS UTILIZADAS
 
+from numpy.core.numeric import NaN
 import pandas as pd
 import xlsxwriter
 import os
 import re
-import logging
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -23,14 +23,15 @@ def so_str(df):
     
     new = []
     tipo_emp = [' EIRELI', ' S.A.', ' SA', ' EPP', ' ME', ' LTDA']
-
+    count=1
     for i in df:
 
         for j in tipo_emp:
 
-            if j in i:
+            if type(i) != "string":
+                pass
+            elif j in i:
                 i.replace(j,'')
-
         
         try:
             new.append(''.join(char for char in i if char not in ['.','-','/','\\','!']))
@@ -83,12 +84,15 @@ def manipulação(fin, cod):
     # TRANSFORMA OS VALORES DE STRING PARA FLOAT
 
     fun = lambda x: float(x.replace(".","").replace(",","."))
-    fin["Valor Líquido"] = fin["Valor Líquido"].apply(fun)
-
+    try:
+        fin["Valor Líquido"] = fin["Valor Líquido"].apply(fun)
+    except ValueError:
+        pass
+    
     try:
         fin["Valor Abatimento"] = fin["Valor Abatimento"].apply(fun)
         fin["Valor Acréscimo"] = fin["Valor Acréscimo"].apply(fun)
-    except KeyError:
+    except:
         pass
 
     # RETIRA DA DATA O DIA DA SEMANA E SUBSTITUI A COLUNA NÃO FORMATADA
@@ -277,6 +281,8 @@ def separa_contas(df, loja, fornec, x, relatorio_dir):
         lista = ['codigo','FORNECEDOR']
         limpa(fornec, lista)
 
+        print(fornec)
+
         # TRANSFORMA A COLUNA RAZÃO SOCIAL E FORNECEDOR EM UMA LISTA CADA E LIMPA OS CARACTERES ESPECIAIS
 
         razao1 = df['Razão Social'].to_list()
@@ -351,18 +357,22 @@ def resultados(fin):
     # SOMA O TOTAL DE PAGAMENTOS REALIZADOS AOS FORNECEDORES
 
     soma = 0
+    try:
+        for i in range(len(fin['Tipo Entrada'])):
 
-    for i in range(len(fin['Tipo Entrada'])):
+            if fin['Tipo Entrada'][i] in ['COMERCIALIZACAO E REVENDA', 'COMPRA DE MERCADORIAS', 
+                                        'COMPRA DE MERCADORIAS P/ PRODUCAO INTERNA']:
+                soma += fin['Valor Líquido'][i]
 
-        if fin['Tipo Entrada'][i] in ['COMERCIALIZACAO E REVENDA', 'COMPRA DE MERCADORIAS', 
-                                      'COMPRA DE MERCADORIAS P/ PRODUCAO INTERNA']:
-            soma += fin['Valor Líquido'][i]
+        print('Total de pagamentos realizados no mês: R$ %.2f'%(soma),'\n')
 
-    print('Total de pagamentos realizados no mês: R$ %.2f'%(soma),'\n')
+    except KeyError:
+        print('Não há a coluna de Tipo Entrada para realizar a soma do total de pagamentos das compras!\n')
 
     # MOSTRA QUANTAS LINHAS FICARAM SEM PREENCHIMENTO
 
     soma = 0
+    
     for i in range(len(fin['DEBITO'])):
         if fin['DEBITO'][i] == '':
             soma +=1

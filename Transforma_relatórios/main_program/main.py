@@ -4,7 +4,6 @@ import kivy
 kivy.require('1.11.1')
 
 import os
-import logging
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -91,41 +90,6 @@ class transformador(App):
         self.title = 'Transformador de arquivos'
         bld
         return Gerenciador()
-
-class log_file():
-    
-    def init(self):
-        # Vamos salvar o nosso arquivo de logger no diretório principal, em um subdiretório com o nome da aplicação
-        self.homeDir = str(os.path.home())                           #obtemos o diretório home
-        self.logFile= os.path.join(self.homeDir, "erros.log")   #criamos o nome do arquivo de logger neste diretório
-                        
-                    
-        # Criamos o logger
-        self.logger = logging.getLogger(__name__)  #__name__ é uma variável que contem o nome do módulo. Assim, saberemos que módulo emitiu a mensagem
-        self.logger.setLevel(logging.INFO)         # neste experimento queremos apresentar apenas as mensagens de INFO e as inferiores (WARNING, ERROR, CRITICAL)
-                                                   # se desejássemos registrar apenas ERROR e CRITICAL, seria logging.ERROR
-        
-        # Criamos um handler para enviar as mensagens para um arquivo
-        logger_handler = logging.FileHandler(self.logFile, mode='w')
-        logger_handler.setLevel(logging.INFO)
-        
-        #observe o mode="w". Isto significa que a cada nova execução do programa, o logger anterior é apagado.
-        #Este é o comportamento que desejamos neste caso especifico, mas na maioria das vezes não desejamos
-        #apagar o log, que deve registrar tudo o que já ocorreu. Uso a forma mode="a" para adicionar novas mensagens
-        #sem apagar o arquivo anterior
-        
-        # Especifique a formatação da mensagem
-        logger_formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-        
-        
-        # Associe esta formatação ao  Handler
-        logger_handler.setFormatter(logger_formatter)
-        
-        # Associe o Handler ao  Logger
-        self.logger.addHandler(logger_handler)
-        
-        #Para emitir uma mensagem no nível info utilizamos a forma:
-        self.logger.info('Logger OK')
 
 # RODANDO O APLICATIVO
 if __name__ == '__main__':

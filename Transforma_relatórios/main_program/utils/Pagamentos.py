@@ -3,7 +3,6 @@
 import xlsxwriter
 import pandas as pd
 from utils import utilitarios
-import logging
 
 def pagamentos(balancete_dir, relatorio_dir, cod_conta):
 
