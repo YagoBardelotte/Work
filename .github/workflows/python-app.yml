@@ -112,48 +112,48 @@ jobs:
         # Extraction depth of files to include in the OSA scan.
         cxOsaDepth: # optional, default is 
         # Retrieve all supported package dependencies before performing OSA scan (see Remarks section).
-    cxExecutePackageDependency: # optional
-    # Generate CxOSA JSON report.
-    cxOsaJson: # optional, default is 
-    # SCA Username
-    cxScaUsername: # optional, default is 
-    # SCA Password
-    cxScaPassword: # optional, default is 
-    # SCA Account Name
-    cxScaAccount: # optional, default is 
-    # SCA API URL
-    cxScaApiUrl: # optional, default is 
-    # SCA Access Control URL
-    cxScaAcessControlUrl: # optional, default is 
-    # SCA Web App URL
-    cxScaWebAppUrl: # optional, default is 
-    # SCA High Threshold
-    cxScaHigh: # optional, default is -1
-    # SCA Medium Threshold
-    cxScaMedium: # optional, default is -1
-    # SCA Low Threshold
-    cxScaLow: # optional, default is -1
-    # SCA Location Path
-    cxScaLocationPath: # optional, default is 
-    # SCA Files Include
-    cxScaFilesInclude: # optional, default is 
-    # SCA Files Exclude
-    cxScaFilesExclude: # optional, default is 
-    # SCA Folders Exclude
-    cxScaPathExclude: # optional, default is 
-    # This parameter will break the build if the CxOSA policy is violated.
-    cxCheckPolicy: # optional
-    # Skip Checkmarx Action Step if Fail
-    cxSkipIfFail: # optional
-    # Trust Self-signed Certificates
-    cxTrustedCertificates: # optional
-    # Github Token Secret
-    cxGithubToken: # optional, default is 
-    # Create Github Issues
-    cxGithubIssues: # optional
-    # Github Labels for Issues created
-    cxGithubLabels: # optional, default is bug
-    # Github Assignees for Issues created
-    cxGithubAssignees: # optional, default is 
-    # Github Milestone for Issues created
-    cxGithubMilestone: # optional
+        cxExecutePackageDependency: # optional
+        # Generate CxOSA JSON report.
+        cxOsaJson: # optional, default is 
+        # SCA Username
+        cxScaUsername: # optional, default is 
+        # SCA Password
+        cxScaPassword: # optional, default is 
+        # SCA Account Name
+        cxScaAccount: # optional, default is 
+        # SCA API URL
+        cxScaApiUrl: # optional, default is 
+        # SCA Access Control URL
+        cxScaAcessControlUrl: # optional, default is 
+        # SCA Web App URL
+        cxScaWebAppUrl: # optional, default is 
+        # SCA High Threshold
+        cxScaHigh: # optional, default is -1
+        # SCA Medium Threshold
+        cxScaMedium: # optional, default is -1
+        # SCA Low Threshold
+        cxScaLow: # optional, default is -1
+        # SCA Location Path
+        cxScaLocationPath: # optional, default is 
+        # SCA Files Include
+        cxScaFilesInclude: # optional, default is 
+        # SCA Files Exclude
+        cxScaFilesExclude: # optional, default is 
+        # SCA Folders Exclude
+        cxScaPathExclude: # optional, default is 
+        # This parameter will break the build if the CxOSA policy is violated.
+        cxCheckPolicy: # optional
+        # Skip Checkmarx Action Step if Fail
+        cxSkipIfFail: # optional
+        # Trust Self-signed Certificates
+        cxTrustedCertificates: # optional
+        # Github Token Secret
+        cxGithubToken: # optional, default is 
+        # Create Github Issues
+        cxGithubIssues: # optional
+        # Github Labels for Issues created
+        cxGithubLabels: # optional, default is bug
+        # Github Assignees for Issues created
+        cxGithubAssignees: # optional, default is 
+        # Github Milestone for Issues created
+        cxGithubMilestone: # optional
