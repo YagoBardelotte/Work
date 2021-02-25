@@ -1,5 +1,3 @@
-#%%
-
 import xlsxwriter
 import pandas as pd
 from utils import utilitarios
