@@ -1,6 +1,8 @@
 # IMPORTAÇÕES DAS LIBS E FUNÇÕES UTILIZADAS
 
 import kivy
+from kivy.logger import Logger
+from kivy.config import Config
 kivy.require('1.11.1')
 
 import os
@@ -17,14 +19,14 @@ from tkinter import filedialog as dlg
 
 BASE_DIR = os.getcwd()
 DESIGN = os.path.join(BASE_DIR + '\design.kv')
+CONFIG_DIR = os.path.join(BASE_DIR + '\\utils')
+CONFIG_FILE = os.path.join(CONFIG_DIR + '\\config.ini')
 
-import logging
 from datetime import date
-logging.basicConfig(filename=f"{BASE_DIR}\\log_{date.today().strftime('%d-%m-%Y')}.log", 
-                    filemode='a', 
-                    encoding="utf-8", 
-                    level=logging.DEBUG, 
-                    format= "%(asctime)s :: %(funcName)s :: %(levelno)s :: %(lineno)d")
+data=date.today().strftime('%d-%m-%Y')
+
+Config.read(CONFIG_FILE)
+Config.set('kivy', 'log_dir', CONFIG_DIR)
 
 # CARREGANDO ARQUIVO .KV COM ENCODING UTF-8
 
@@ -80,6 +82,7 @@ class Principal(Screen):
             self.ids.mensagem.text = 'ATENÇÃO! TODOS OS CAMPOS SÃO DE PREENCHIMENTO OBRIGATÓRIO'
 
         else:            
+            Logger.info("MAIN: INICIALIZANDO O PROGRAMA")
             pagamentos(balancete_dir, relatorio_dir, cod_conta)
             self.ids.mensagem.text = "Arquivo salvo!"
         
@@ -94,6 +97,7 @@ class Ajuda(Screen):
     pass
 
 class transformador(App):
+
     def build(self):
         self.title = 'Transformador de arquivos'
         bld
@@ -101,5 +105,4 @@ class transformador(App):
 
 # RODANDO O APLICATIVO
 if __name__ == '__main__':
-    logging.info("MAIN        : INICIALIZANDO O PROGRAMA")
     transformador().run()

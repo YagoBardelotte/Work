@@ -7,10 +7,7 @@ import pandas as pd
 import xlsxwriter
 import os
 import re
-import logging
-from datetime import date
-logging.basicConfig(filename=f"log_{date.today().strftime('%d-%m-%Y')}.log", filemode='w', encoding="utf-8", level=logging.DEBUG, 
-                    format= "%(asctime)s :: %(funcName)s :: %(levelno)s :: %(lineno)d")
+from kivy.logger import Logger
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -42,7 +39,7 @@ def so_str(df):
             new.append(''.join(char for char in i if char not in ['.','-','/','\\','!']))
 
         except (TypeError, ValueError) as err:
-            logging.warning(f"{err} na função de limpar a razão social")
+            Logger.warning(f"{err}: Problemas na função de limpar a razão social")
             pass
         
     return(pd.Series(new))
@@ -65,7 +62,7 @@ def limpa(df,lista):
         
         df.reset_index(drop = True, inplace = True)
     except Exception as err:
-        logging.warning(f"{err} na função de retirar as colunas não utilizadas")
+        Logger.warning(f"{err}: Problemas na função de retirar as colunas não utilizadas")
 
 
 #%%
@@ -81,7 +78,7 @@ def manipulação(fin, cod):
     OUTPUT: CLEANED DATAFRAME
     '''
     
-    logging.warning('MANIPULANDO O RELATÓRIO FINANCEIRO...\n')
+    Logger.info('MANIPULATE: MANIPULANDO O RELATÓRIO FINANCEIRO...\n')
 
     # EXCLUI COLUNAS NÃO UTLIZADAS E PREENCHE VALORES VAZIOS
 
@@ -106,14 +103,14 @@ def manipulação(fin, cod):
     try:
         fin["Valor Líquido"] = fin["Valor Líquido"].apply(fun)
     except ValueError as err:
-        logging.warning(f"{err} ao formatar a coluna 'Valor Líquido'! Talvez ela não exista no arquivo")
+        Logger.warning(f"MANIPULATE: {err} ao formatar a coluna 'Valor Líquido'! Talvez ela não exista no arquivo")
         pass
     
     try:
         fin["Valor Abatimento"] = fin["Valor Abatimento"].apply(fun)
         fin["Valor Acréscimo"] = fin["Valor Acréscimo"].apply(fun)
-    except:
-        logging.warning("Erro ao formatar a coluna 'Valor abatimento' e/ou 'Valor Acréscimo'! Talvez ela(s) não exista(m) no arquivo")
+    except Exception as err:
+        Logger.warning(f"MANIPULATE: {err} ao formatar a coluna 'Valor abatimento' e/ou 'Valor Acréscimo'! Talvez ela(s) não exista(m) no arquivo")
         pass
 
     # RETIRA DA DATA O DIA DA SEMANA E SUBSTITUI A COLUNA NÃO FORMATADA
@@ -127,7 +124,7 @@ def manipulação(fin, cod):
     fin['DEBITO'] = ""
     fin['CREDITO'] = ""
 
-    logging.warning('INSERINDO A CONTA CONTÁBIL DE DUPLICATAS PAGAS A COMPENSAR:')
+    Logger.info('MANIPULATE: INSERINDO A CONTA CONTÁBIL DE DUPLICATAS PAGAS A COMPENSAR:')
     x = int(cod)
 
     try:
@@ -137,7 +134,7 @@ def manipulação(fin, cod):
             else:
                 fin['CREDITO'][i] = 5
     except KeyError as err:
-        logging.warning(f"{err} ao buscar a coluna 'Nome Banco'. Talvez ela não exista no arquivo.")
+        Logger.warning(f"MANIPULATE: {err} ao buscar a coluna 'Nome Banco'. Talvez ela não exista no arquivo.")
         fin['CREDITO'] = x
 
 #%%
@@ -155,7 +152,7 @@ def preenche(fornec, fin):
     OUTPUT: FINANCIAL FILE FILLED
     '''
     
-    logging.warning('PREENCHENDO O RELATÓRIO FINANCEIRO COM AS CONTAS DOS FORNECEDORES... \n')
+    Logger.info('FILLING: PREENCHENDO O RELATÓRIO FINANCEIRO COM AS CONTAS DOS FORNECEDORES... \n')
     
     # LIMPA OS FORNECEDORES
 
@@ -258,10 +255,10 @@ def teste_coop_rede(balancete_name, fin, fornec, cod_conta, relatorio_dir):
     Verifica de qual empresa o arquivo com os fornecedores se refere.
     '''
     
-    logging.warning('MANIPULANDO O RELATÓRIO FINANCEIRO...\n')
+    Logger.info('COOP_REDE: MANIPULANDO O RELATÓRIO FINANCEIRO...\n')
     df, lojas = prep_arq(fin, balancete_name)
 
-    print('INSERINDO A CONTA CONTÁBIL DE DUPLICATAS PAGAS A COMPENSAR:')
+    Logger.info('COOP_REDE: INSERINDO A CONTA CONTÁBIL DE DUPLICATAS PAGAS A COMPENSAR:')
     conta_duplics = int(cod_conta)
 
     for i in range(len(lojas)):
@@ -284,7 +281,7 @@ def separa_contas(df, loja, fornec, x, relatorio_dir):
 
     with pd.ExcelWriter((f'{path}/Pgto_{loja}.xlsx'), engine = 'xlsxwriter', date_format='DD-MM-YYYY') as df_limpo: # pylint: disable=abstract-class-instantiated
 
-        logging.warning("PREPARANDO O DF PARA PREENCHER AS COLUNAS DE CRÉDITO E DÉBITO...\n")
+        Logger.info("COOP_REDE: PREPARANDO O DF PARA PREENCHER AS COLUNAS DE CRÉDITO E DÉBITO...\n")
         
         #FORMATA OS VALORES QUE SERÃO UTILIZADOS
 
@@ -344,7 +341,7 @@ def separa_contas(df, loja, fornec, x, relatorio_dir):
         fornec.dropna(inplace = True)
         dic = fornec.set_index('FORNECEDOR').T.to_dict('list')
 
-        logging.warning(f'PREENCHENDO O RELATÓRIO FINANCEIRO DA LOJA {loja} COM AS CONTAS DOS FORNECEDORES... \n')
+        Logger.info(f'COOP_REDE: PREENCHENDO O RELATÓRIO FINANCEIRO DA LOJA {loja} COM AS CONTAS DOS FORNECEDORES... \n')
 
         # PREENCHE O DF DE ACORDO COM A TABELA DE FORNECEDORES
 
@@ -376,10 +373,10 @@ def separa_contas(df, loja, fornec, x, relatorio_dir):
         
         #SALVA O RELATÓRIO FINANCEIRO
         
-        logging.warning(f"The tab's name in the spredsheet is: Pgto_{loja}\n")
+        Logger.info(f"COOP_REDE: O nome da tabela é Pgto_{loja}\n")
         df.to_excel(df_limpo, sheet_name = (f'Pgto_{loja}'), index = False)
         df_limpo.save()
-    logging.warning("Arquivos salvos com sucesso!\n")
+    Logger.info(f"COOP_REDE: Arquivos salvos com sucesso!\n")
 
 #%%
 # FUNÇÃO QUE MOSTRA O RESULTADO DO PREENCHIMENTO (QUANTAS LINHAS SEM CÓDIGO DE FORNECEDOR 
@@ -397,7 +394,7 @@ def resultados(fin):
         if fin['DEBITO'][i] == '':
             forn_sem_conta.append(fin['Razão Social'][i])
 
-    logging.warning(f"Fornecedores sem contas: {set(forn_sem_conta)} \n")
+    Logger.warning(f"Fornecedores sem contas: {set(forn_sem_conta)} \n")
 
     # SOMA O TOTAL DE PAGAMENTOS REALIZADOS AOS FORNECEDORES
 
@@ -410,10 +407,10 @@ def resultados(fin):
                 soma += fin['Valor Líquido'][i]
         soma = round(soma, 2)
 
-        logging.warning(f'Total de pagamentos realizados no mês: R$ {soma} \n')
+        Logger.warning(f'Total de pagamentos realizados no mês: R$ {soma} \n')
 
     except KeyError as err:
-        logging.warning(f'{err}: Não há a coluna de Tipo Entrada para realizar a soma do total de pagamentos das compras!\n')
+        Logger.warning(f'{err}: Não há a coluna de Tipo Entrada para realizar a soma do total de pagamentos das compras!\n')
 
     # MOSTRA QUANTAS LINHAS FICARAM SEM PREENCHIMENTO
 
@@ -423,7 +420,7 @@ def resultados(fin):
         if fin['DEBITO'][i] == '':
             soma +=1
 
-    logging.warning(f'Total de linhas sem preenchimento: {soma}\n\nTotal de fornecedores sem preenchimento: {len(set(forn_sem_conta))}\n')
+    Logger.warning(f'Total de linhas sem preenchimento: {soma}\n\nTotal de fornecedores sem preenchimento: {len(set(forn_sem_conta))}\n')
 
 #%%
 # FUNÇÃO QUE EXPORTA O RELATÓRIO FINANCEIRO PRONTO
@@ -437,4 +434,4 @@ def exporta(fin, data_dir):
     fin_limpo = pd.ExcelWriter(f'{path}/arq_limpo.xlsx', engine = 'xlsxwriter') # pylint: disable=abstract-class-instantiated
     fin.to_excel(fin_limpo, index = False,  float_format="%.2f")
     fin_limpo.save()
-    logging.warning("Arquivo salvo com sucesso!\n")
+    Logger.warning("Arquivo salvo com sucesso!\n")
