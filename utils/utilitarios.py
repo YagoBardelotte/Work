@@ -1,11 +1,16 @@
 #%%
 # BIBLIOTECAS UTILIZADAS
 
+from types import prepare_class
 from numpy.core.numeric import NaN
 import pandas as pd
 import xlsxwriter
 import os
 import re
+import logging
+from datetime import date
+logging.basicConfig(filename=f"log_{date.today().strftime('%d-%m-%Y')}.log", filemode='w', encoding="utf-8", level=logging.DEBUG, 
+                    format= "%(asctime)s :: %(funcName)s :: %(levelno)s :: %(lineno)d")
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -35,7 +40,9 @@ def so_str(df):
         
         try:
             new.append(''.join(char for char in i if char not in ['.','-','/','\\','!']))
-        except (TypeError, ValueError):
+
+        except (TypeError, ValueError) as err:
+            logging.warning(f"{err} na função de limpar a razão social")
             pass
         
     return(pd.Series(new))
@@ -51,19 +58,30 @@ def limpa(df,lista):
     INPUT: RECEBE O DF E A LISTA DE COLUNAS ESSENCIAIS
     OUTPUT: RETORNA O DF SOMENTE COM AS COLUNAS ESSENCIAIS
     '''
+    try:
+        for i in df:
+            if i not in lista:
+                df.drop([i], axis = 1, inplace = True)
+        
+        df.reset_index(drop = True, inplace = True)
+    except Exception as err:
+        logging.warning(f"{err} na função de retirar as colunas não utilizadas")
 
-    for i in df:
-        if i not in lista:
-            df.drop([i], axis = 1, inplace = True)
-    
-    df.reset_index(drop = True, inplace = True)
 
 #%%
 #FUNÇÃO QUE PREPARA O RELATÓRIO FINANCEIRO PARA PREENCHIMENTO DOS CAMPOS
 
 def manipulação(fin, cod):
+
+    '''
+    Função para manipular o arquivo financeiro. 
+    Limpeza, transforma dados, formata e cria novas colunas
+
+    INPUT: DATAFRAME, DUPLICATAS CODE
+    OUTPUT: CLEANED DATAFRAME
+    '''
     
-    print('MANIPULANDO O RELATÓRIO FINANCEIRO...\n')
+    logging.warning('MANIPULANDO O RELATÓRIO FINANCEIRO...\n')
 
     # EXCLUI COLUNAS NÃO UTLIZADAS E PREENCHE VALORES VAZIOS
 
@@ -84,15 +102,18 @@ def manipulação(fin, cod):
     # TRANSFORMA OS VALORES DE STRING PARA FLOAT
 
     fun = lambda x: float(x.replace(".","").replace(",","."))
+
     try:
         fin["Valor Líquido"] = fin["Valor Líquido"].apply(fun)
-    except ValueError:
+    except ValueError as err:
+        logging.warning(f"{err} ao formatar a coluna 'Valor Líquido'! Talvez ela não exista no arquivo")
         pass
     
     try:
         fin["Valor Abatimento"] = fin["Valor Abatimento"].apply(fun)
         fin["Valor Acréscimo"] = fin["Valor Acréscimo"].apply(fun)
     except:
+        logging.warning("Erro ao formatar a coluna 'Valor abatimento' e/ou 'Valor Acréscimo'! Talvez ela(s) não exista(m) no arquivo")
         pass
 
     # RETIRA DA DATA O DIA DA SEMANA E SUBSTITUI A COLUNA NÃO FORMATADA
@@ -106,9 +127,8 @@ def manipulação(fin, cod):
     fin['DEBITO'] = ""
     fin['CREDITO'] = ""
 
-    print('INSERINDO A CONTA CONTÁBIL DE DUPLICATAS PAGAS A COMPENSAR:')
+    logging.warning('INSERINDO A CONTA CONTÁBIL DE DUPLICATAS PAGAS A COMPENSAR:')
     x = int(cod)
-    print('\n')
 
     try:
         for i in range(len(fin['Nome Banco'])):
@@ -116,7 +136,8 @@ def manipulação(fin, cod):
                 fin['CREDITO'][i] = x
             else:
                 fin['CREDITO'][i] = 5
-    except KeyError:
+    except KeyError as err:
+        logging.warning(f"{err} ao buscar a coluna 'Nome Banco'. Talvez ela não exista no arquivo.")
         fin['CREDITO'] = x
 
 #%%
@@ -124,8 +145,17 @@ def manipulação(fin, cod):
 
 #%%
 def preenche(fornec, fin):
+
+    '''
+    Ajusta o arquivo dos fornecedores e preenche as colunas de débito com os respectivos códigos.
+    Limpa os fornecedores, transforma algumas colunas para retirar os caracteres especiais,
+    organiza em ordem alfabetica, preenche o relatório financeiro, retira linhas inválidas.
+
+    INPUT: DATAFRAMES (PROVIDER AND FINANCIAL FILE)
+    OUTPUT: FINANCIAL FILE FILLED
+    '''
     
-    print('PREENCHENDO O RELATÓRIO FINANCEIRO COM AS CONTAS DOS FORNECEDORES... \n')
+    logging.warning('PREENCHENDO O RELATÓRIO FINANCEIRO COM AS CONTAS DOS FORNECEDORES... \n')
     
     # LIMPA OS FORNECEDORES
 
@@ -135,7 +165,7 @@ def preenche(fornec, fin):
         fornec = fornec[:][11:-2]
 
     fornec['codigo'] = fornec['Empresa:'] # CRIA UMA NOVA COLUNA COM OS CÓDIGOS DOS FORNECEDORES
-    fornec['FORNECEDOR'] = fornec['Unnamed: 11'] #CRIA UMA NOVA COLUNA COM OS NOMES DOS FORNECEDORES
+    fornec['FORNECEDOR'] = fornec['Unnamed: 11'] # CRIA UMA NOVA COLUNA COM OS NOMES DOS FORNECEDORES
 
     lista = ['codigo','FORNECEDOR']
     limpa(fornec, lista)
@@ -182,6 +212,10 @@ def preenche(fornec, fin):
 
 def prep_arq(df, balancete_name):
 
+    '''
+    Prepara os arquivos referente às empresas Coopideal e Rede Local para fazer todo o processo de manipulação.
+    '''
+
     if balancete_name.endswith('_coop.csv'):
 
         CI_LOJA_01_coop = df.loc[(df['Loja']) == 'CI LOJA 01']
@@ -195,7 +229,9 @@ def prep_arq(df, balancete_name):
 
         nomes = ['CI_LOJA_01_coop', 'CI_LOJA_04_coop', 'CI_LOJA_05_coop', 'CI_LOJA_07_coop', 'CI_LOJA_08_coop', 'CI_LOJA_09_coop']
 
-    else:
+        return(lojas, nomes)
+
+    elif balancete_name.endswith('_rede.csv'):
 
         CB01_PORTO_FELIZ_rede = df.loc[(df['Loja']) == 'CB01 PORTO FELIZ']
         CB02_DEPOSITO_rede = df.loc[(df['Loja']) == 'CB02 DEPOSITO']
@@ -208,14 +244,21 @@ def prep_arq(df, balancete_name):
 
         nomes = ['CB01_PORTO_FELIZ_rede', 'CB02_DEPOSITO_rede', 'CB03_CERQUILHO_rede', 'CB04_PIRA_01_ST_rede', 'CB05_INDAIATUBA_rede', 'CB06_PIRA_02_MD_rede']
 
-    return(lojas, nomes)
+        return(lojas, nomes)
+    
+    else:
+        return False
 
 #%%
 # TESTA SE O BALANCETE É DA REDE OU DA COOP
 
 def teste_coop_rede(balancete_name, fin, fornec, cod_conta, relatorio_dir):
+
+    '''
+    Verifica de qual empresa o arquivo com os fornecedores se refere.
+    '''
     
-    print('MANIPULANDO O RELATÓRIO FINANCEIRO...\n')
+    logging.warning('MANIPULANDO O RELATÓRIO FINANCEIRO...\n')
     df, lojas = prep_arq(fin, balancete_name)
 
     print('INSERINDO A CONTA CONTÁBIL DE DUPLICATAS PAGAS A COMPENSAR:')
@@ -229,6 +272,11 @@ def teste_coop_rede(balancete_name, fin, fornec, cod_conta, relatorio_dir):
 # SEPARATE EACH DATAFRAME SAVED WITH prep_arq() FUNCTION AND SAVE IN .XLSX FORMAT
 
 def separa_contas(df, loja, fornec, x, relatorio_dir):
+
+    '''
+    Separa, manipula e salva os arquivos referentes ao grupo Rede/Coopideal organizados e preenchidos
+    com as contas de fornecedor.
+    '''
     
     # CRIA UM ARQUIVO XLSX PARA CADA LOJA
 
@@ -236,7 +284,7 @@ def separa_contas(df, loja, fornec, x, relatorio_dir):
 
     with pd.ExcelWriter((f'{path}/Pgto_{loja}.xlsx'), engine = 'xlsxwriter', date_format='DD-MM-YYYY') as df_limpo: # pylint: disable=abstract-class-instantiated
 
-        print("PREPARANDO O DF PARA PREENCHER AS COLUNAS DE CRÉDITO E DÉBITO...\n")
+        logging.warning("PREPARANDO O DF PARA PREENCHER AS COLUNAS DE CRÉDITO E DÉBITO...\n")
         
         #FORMATA OS VALORES QUE SERÃO UTILIZADOS
 
@@ -281,8 +329,6 @@ def separa_contas(df, loja, fornec, x, relatorio_dir):
         lista = ['codigo','FORNECEDOR']
         limpa(fornec, lista)
 
-        print(fornec)
-
         # TRANSFORMA A COLUNA RAZÃO SOCIAL E FORNECEDOR EM UMA LISTA CADA E LIMPA OS CARACTERES ESPECIAIS
 
         razao1 = df['Razão Social'].to_list()
@@ -298,7 +344,7 @@ def separa_contas(df, loja, fornec, x, relatorio_dir):
         fornec.dropna(inplace = True)
         dic = fornec.set_index('FORNECEDOR').T.to_dict('list')
 
-        print(f'PREENCHENDO O RELATÓRIO FINANCEIRO DA LOJA {loja} COM AS CONTAS DOS FORNECEDORES... \n')
+        logging.warning(f'PREENCHENDO O RELATÓRIO FINANCEIRO DA LOJA {loja} COM AS CONTAS DOS FORNECEDORES... \n')
 
         # PREENCHE O DF DE ACORDO COM A TABELA DE FORNECEDORES
 
@@ -330,17 +376,16 @@ def separa_contas(df, loja, fornec, x, relatorio_dir):
         
         #SALVA O RELATÓRIO FINANCEIRO
         
-        print(f"The tab's name in the spredsheet is: Pgto_{loja}\n")
+        logging.warning(f"The tab's name in the spredsheet is: Pgto_{loja}\n")
         df.to_excel(df_limpo, sheet_name = (f'Pgto_{loja}'), index = False)
         df_limpo.save()
+    logging.warning("Arquivos salvos com sucesso!\n")
 
 #%%
 # FUNÇÃO QUE MOSTRA O RESULTADO DO PREENCHIMENTO (QUANTAS LINHAS SEM CÓDIGO DE FORNECEDOR 
 # E O VALOR TOTAL DOS PAGAMENTOS)
 
 def resultados(fin):
-    
-    print('FORNECEDORES SEM PREENCHIMENTO: \n')
 
     # MOSTRA QUAIS FORNECEDORES FICARAM SEM PREENCHIMENTO
 
@@ -352,7 +397,7 @@ def resultados(fin):
         if fin['DEBITO'][i] == '':
             forn_sem_conta.append(fin['Razão Social'][i])
 
-    print(set(forn_sem_conta),'\n')
+    logging.warning(f"Fornecedores sem contas: {set(forn_sem_conta)} \n")
 
     # SOMA O TOTAL DE PAGAMENTOS REALIZADOS AOS FORNECEDORES
 
@@ -363,11 +408,12 @@ def resultados(fin):
             if fin['Tipo Entrada'][i] in ['COMERCIALIZACAO E REVENDA', 'COMPRA DE MERCADORIAS', 
                                         'COMPRA DE MERCADORIAS P/ PRODUCAO INTERNA']:
                 soma += fin['Valor Líquido'][i]
+        soma = round(soma, 2)
 
-        print('Total de pagamentos realizados no mês: R$ %.2f'%(soma),'\n')
+        logging.warning(f'Total de pagamentos realizados no mês: R$ {soma} \n')
 
-    except KeyError:
-        print('Não há a coluna de Tipo Entrada para realizar a soma do total de pagamentos das compras!\n')
+    except KeyError as err:
+        logging.warning(f'{err}: Não há a coluna de Tipo Entrada para realizar a soma do total de pagamentos das compras!\n')
 
     # MOSTRA QUANTAS LINHAS FICARAM SEM PREENCHIMENTO
 
@@ -377,7 +423,7 @@ def resultados(fin):
         if fin['DEBITO'][i] == '':
             soma +=1
 
-    print(f'Total de linhas sem preenchimento: {soma}\n\nTotal de fornecedores sem preenchimento: {len(set(forn_sem_conta))}\n')
+    logging.warning(f'Total de linhas sem preenchimento: {soma}\n\nTotal de fornecedores sem preenchimento: {len(set(forn_sem_conta))}\n')
 
 #%%
 # FUNÇÃO QUE EXPORTA O RELATÓRIO FINANCEIRO PRONTO
@@ -391,3 +437,4 @@ def exporta(fin, data_dir):
     fin_limpo = pd.ExcelWriter(f'{path}/arq_limpo.xlsx', engine = 'xlsxwriter') # pylint: disable=abstract-class-instantiated
     fin.to_excel(fin_limpo, index = False,  float_format="%.2f")
     fin_limpo.save()
+    logging.warning("Arquivo salvo com sucesso!\n")

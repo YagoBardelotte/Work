@@ -15,10 +15,18 @@ from utils.Pagamentos import pagamentos
 from tkinter import *
 from tkinter import filedialog as dlg
 
-# CARREGANDO ARQUIVO .KV COM ENCODING UTF-8
-
 BASE_DIR = os.getcwd()
 DESIGN = os.path.join(BASE_DIR + '\design.kv')
+
+import logging
+from datetime import date
+logging.basicConfig(filename=f"{BASE_DIR}\\log_{date.today().strftime('%d-%m-%Y')}.log", 
+                    filemode='a', 
+                    encoding="utf-8", 
+                    level=logging.DEBUG, 
+                    format= "%(asctime)s :: %(funcName)s :: %(levelno)s :: %(lineno)d")
+
+# CARREGANDO ARQUIVO .KV COM ENCODING UTF-8
 
 bld = Builder.load_string(open(DESIGN, encoding="utf-8").read(), rulesonly=True)
 
@@ -93,4 +101,5 @@ class transformador(App):
 
 # RODANDO O APLICATIVO
 if __name__ == '__main__':
+    logging.info("MAIN        : INICIALIZANDO O PROGRAMA")
     transformador().run()
