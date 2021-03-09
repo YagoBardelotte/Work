@@ -18,7 +18,7 @@ from tkinter import *
 from tkinter import filedialog as dlg
 
 BASE_DIR = os.getcwd()
-DESIGN = os.path.join(BASE_DIR + '\design.kv')
+DESIGN = os.path.join(BASE_DIR + '\\design.kv')
 CONFIG_DIR = os.path.join(BASE_DIR + '\\utils')
 CONFIG_FILE = os.path.join(CONFIG_DIR + '\\config.ini')
 
@@ -26,7 +26,6 @@ from datetime import date
 data=date.today().strftime('%d-%m-%Y')
 
 Config.read(CONFIG_FILE)
-Config.set('kivy', 'log_dir', CONFIG_DIR)
 
 # CARREGANDO ARQUIVO .KV COM ENCODING UTF-8
 

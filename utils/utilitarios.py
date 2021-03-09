@@ -87,7 +87,7 @@ def manipulação(fin, cod):
             fin.drop(i, axis=1, inplace=True)
             break
 
-    lista = ['Razão Social','Valor Líquido', 'Valor Abatimento', 'Valor Acréscimo', 'Data Pagamento', 'Observação','Nome Banco','Tipo Entrada', 'Banco']
+    lista = ['Razão Social','Valor Líquido', 'Valor Parcela', 'Valor Abatimento', 'Valor Acréscimo', 'Data Pagamento', 'Observação','Nome Banco','Tipo Entrada', 'Banco']
 
     limpa(fin, lista)
     fin.fillna('', inplace = True)
@@ -98,8 +98,9 @@ def manipulação(fin, cod):
 
     try:
         fin["Valor Líquido"] = fin["Valor Líquido"].apply(fun)
-    except ValueError as err:
+    except [ValueError, KeyError] as err:
         Logger.warning(f"MANIPULATE: {err} ao formatar a coluna 'Valor Liquido'! Talvez ela nao exista no arquivo")
+        fin["Valor Parcela"] = fin["Valor Parcela"].apply(fun)
         pass
     
     try:
