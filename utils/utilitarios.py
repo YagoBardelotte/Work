@@ -38,7 +38,7 @@ def so_str(df):
 
         except (TypeError, ValueError) as err:
             Logger.warning(f"{err}: Problemas na funcao de limpar a razao social")
-            pass
+            break
         
     return(pd.Series(new))
 
@@ -58,6 +58,7 @@ def limpa(df,lista):
                 df.drop([i], axis = 1, inplace = True)
         
         df.reset_index(drop = True, inplace = True)
+        
     except Exception as err:
         Logger.warning(f"{err}: Problemas na funcao de retirar as colunas não utilizadas")
 
@@ -160,14 +161,17 @@ def preenche(fornec, fin):
     fornec['FORNECEDOR'] = fornec['Unnamed: 11'] # CRIA UMA NOVA COLUNA COM OS NOMES DOS FORNECEDORES
 
     lista = ['codigo','FORNECEDOR']
+    Logger.info("FILLING: LIMPANDO LISTA DE FORNECEDORES")
     limpa(fornec, lista)
     
     # TRANSFORMA A COLUNA RAZÃO SOCIAL E FORNECEDOR EM UMA LISTA CADA E LIMPA OS CARACTERES ESPECIAIS
 
     razao1 = fin['Razão Social'].to_list()
+    Logger.info("FILLING: FORMATANDO RAZAO SOCIAL DO FINANCEIRO")
     fin['Razão Social'] = so_str(razao1)
 
     razao = fornec['FORNECEDOR'].to_list()
+    Logger.info("FILLING: FORMATANDO RAZAO SOCIAL DO BALANCETE")
     fornec['FORNECEDOR'] = so_str(razao)
 
     # ORGANIZA POR ORDEM ALFABÉTICA E TRANSFORMA EM DICIONÁRIO
