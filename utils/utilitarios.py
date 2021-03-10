@@ -214,15 +214,15 @@ def prep_arq(df, balancete_name):
     if balancete_name.endswith('_coop.csv'):
 
         CI_LOJA_01_coop = df.loc[(df['Loja']) == 'CI LOJA 01']
-        CI_LOJA_04_coop = df.loc[(df['Loja']) == 'CI LOJA 04']
-        CI_LOJA_05_coop = df.loc[(df['Loja']) == 'CI LOJA 05']
-        CI_LOJA_07_coop = df.loc[(df['Loja']) == 'CI LOJA 07']
-        CI_LOJA_08_coop = df.loc[(df['Loja']) == 'CI LOJA 08']
-        CI_LOJA_09_coop = df.loc[(df['Loja']) == 'CI LOJA 09']
+        # CI_LOJA_04_coop = df.loc[(df['Loja']) == 'CI LOJA 04']
+        # CI_LOJA_05_coop = df.loc[(df['Loja']) == 'CI LOJA 05']
+        # CI_LOJA_07_coop = df.loc[(df['Loja']) == 'CI LOJA 07']
+        # CI_LOJA_08_coop = df.loc[(df['Loja']) == 'CI LOJA 08']
+        # CI_LOJA_09_coop = df.loc[(df['Loja']) == 'CI LOJA 09']
 
-        lojas = [CI_LOJA_01_coop, CI_LOJA_04_coop, CI_LOJA_05_coop, CI_LOJA_07_coop, CI_LOJA_08_coop, CI_LOJA_09_coop]
+        lojas = [CI_LOJA_01_coop] #CI_LOJA_04_coop, CI_LOJA_05_coop, CI_LOJA_07_coop, CI_LOJA_08_coop, CI_LOJA_09_coop]
 
-        nomes = ['CI_LOJA_01_coop', 'CI_LOJA_04_coop', 'CI_LOJA_05_coop', 'CI_LOJA_07_coop', 'CI_LOJA_08_coop', 'CI_LOJA_09_coop']
+        nomes = ['CI_LOJA_01_coop'] # 'CI_LOJA_04_coop', 'CI_LOJA_05_coop', 'CI_LOJA_07_coop', 'CI_LOJA_08_coop', 'CI_LOJA_09_coop']
 
         return(lojas, nomes)
 
@@ -234,10 +234,17 @@ def prep_arq(df, balancete_name):
         CB04_PIRA_01_ST_rede = df.loc[(df['Loja']) == 'CB04 PIRA 01 ST']
         CB05_INDAIATUBA_rede = df.loc[(df['Loja']) == 'CB05 INDAIATUBA']
         CB06_PIRA_02_MD_rede = df.loc[(df['Loja']) == 'CB06 PIRA 02 MD']
+        CB07_TIETE_rede = df.loc[(df['Loja']) == 'CB07 TIETE']
+        CB08_LARANJAL_rede = df.loc[(df['Loja']) == 'CB08 LARANJAL']
+        CB09_LEME_rede = df.loc[(df['Loja']) == 'CB09 LEME']
 
-        lojas = [CB01_PORTO_FELIZ_rede, CB02_DEPOSITO_rede, CB03_CERQUILHO_rede, CB04_PIRA_01_ST_rede, CB05_INDAIATUBA_rede, CB06_PIRA_02_MD_rede]
+        lojas = [CB01_PORTO_FELIZ_rede, CB02_DEPOSITO_rede, CB03_CERQUILHO_rede, CB04_PIRA_01_ST_rede, 
+                CB05_INDAIATUBA_rede, CB06_PIRA_02_MD_rede, CB07_TIETE_rede, CB08_LARANJAL_rede, 
+                CB09_LEME_rede]
 
-        nomes = ['CB01_PORTO_FELIZ_rede', 'CB02_DEPOSITO_rede', 'CB03_CERQUILHO_rede', 'CB04_PIRA_01_ST_rede', 'CB05_INDAIATUBA_rede', 'CB06_PIRA_02_MD_rede']
+        nomes = ['CB01_PORTO_FELIZ_rede', 'CB02_DEPOSITO_rede', 'CB03_CERQUILHO_rede', 'CB04_PIRA_01_ST_rede', 
+                'CB05_INDAIATUBA_rede', 'CB06_PIRA_02_MD_rede', 'CB07_TIETE_rede', 'CB08_LARANJAL_rede', 
+                'CB09_LEME_rede']
 
         return(lojas, nomes)
     

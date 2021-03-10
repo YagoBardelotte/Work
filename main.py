@@ -13,7 +13,7 @@ warnings.filterwarnings('ignore')
 from kivy.app import App
 from kivy.lang.builder import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
-from utils.Pagamentos import pagamentos
+from utils.Pagamentos import pagamentos, pagamentos_coop_rede
 from tkinter import *
 from tkinter import filedialog as dlg
 
@@ -68,13 +68,11 @@ class Principal(Screen):
 
     def processamento(self):
 
-        balancete_name = self.ids.nome_balancete.text
         balancete_dir = self.ids.cam_balancete.text
-        relatorio_name = self.ids.nome_relatorio.text
         relatorio_dir = self.ids.cam_relatorio.text
         cod_conta = self.ids.conta.text
         
-        if balancete_name == '' or balancete_dir == '' or relatorio_name == '' or relatorio_dir == '' or cod_conta == '':
+        if balancete_dir == '' or relatorio_dir == '' or cod_conta == '':
             self.ids.mensagem.color = 1,0,0,1
             self.ids.mensagem.font_size = 15
             self.ids.mensagem.bold = True
@@ -89,11 +87,66 @@ class Principal(Screen):
         self.ids.cam_balancete.text = ''
         self.ids.cam_relatorio.text = ''
         self.ids.conta.text = ''
-        self.ids.nome_balancete.text = ''
-        self.ids.nome_relatorio.text = ''
+
+class Coop_rede(Screen):
+    
+    def get_path1(self):
         
-class Ajuda(Screen):
-    pass
+        root = Tk()
+        root.withdraw()
+        opcoes = {'initialdir': '', 'title': 'Caminho para Balancete'}
+        caminho = os.path.abspath(dlg.askopenfilename(**opcoes))
+        filename = caminho.split('\\')
+        self.ids.cam_balancete.text = caminho
+        self.ids.nome_balancete.text = filename[-1]
+    
+    def get_path2(self):
+
+        root = Tk()
+        root.withdraw()
+        opcoes = {'initialdir': '', 'title': 'Caminho para Relatório'}
+        caminho = os.path.abspath(dlg.askopenfilename(**opcoes))
+        filename = caminho.split('\\')
+        self.ids.cam_relatorio.text = caminho
+        self.ids.nome_relatorio.text = filename[-1]
+    
+    def iniciando(self):
+
+        self.ids.mensagem.text = 'Processando...'
+
+    def processamento(self):
+
+        balancete_dir = self.ids.cam_balancete.text
+        relatorio_dir = self.ids.cam_relatorio.text
+        cod_conta = self.ids.conta.text
+
+        balancete_name = balancete_dir.split('\\')
+        
+        if balancete_dir == '' or relatorio_dir == '' or cod_conta == '':
+            self.ids.mensagem.color = 1,0,0,1
+            self.ids.mensagem.font_size = 15
+            self.ids.mensagem.bold = True
+            self.ids.mensagem.text = 'ATENÇÃO! TODOS OS CAMPOS SÃO DE PREENCHIMENTO OBRIGATÓRIO'
+
+        elif balancete_name[-1] in ['_coop', '_rede']:
+        
+            Logger.info("Arquivo pertence ao grupo Rede/Coopideal")
+            pagamentos_coop_rede(balancete_name[-1], balancete_dir, relatorio_dir, cod_conta)
+
+            self.ids.mensagem.text = "Arquivo salvo!"
+        
+        else:
+            
+            self.ids.mensagem.color = 1,0,0,1
+            self.ids.mensagem.font_size = 15
+            self.ids.mensagem.bold = True
+            self.ids.mensagem.text = 'ATENÇÃO! ARQUIVOS NÃO SÃO DO GRUPO REDE LOCAL/COOPIDEAL'
+
+        
+    def limpeza(self):
+        self.ids.cam_balancete.text = ''
+        self.ids.cam_relatorio.text = ''
+        self.ids.conta.text = ''
 
 class transformador(App):
 
