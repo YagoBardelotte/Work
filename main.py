@@ -21,7 +21,8 @@ BASE_DIR = os.getcwd()
 DESIGN = os.path.join(BASE_DIR + '\\design.kv')
 CONFIG_DIR = os.path.join(BASE_DIR + '\\utils')
 CONFIG_FILE = os.path.join(CONFIG_DIR + '\\config.ini')
-LOGS = os.listdir(os.path.join(BASE_DIR + '\\logs'))
+LOGS = os.path.join(BASE_DIR + '\\logs')
+logs = os.listdir(LOGS)
 
 from datetime import date
 data=date.today().strftime('%d-%m-%Y')
@@ -154,7 +155,7 @@ class transformador(App):
 
 # RODANDO O APLICATIVO
 if __name__ == '__main__':
-    if len(LOGS) > 8:
-        for log in LOGS[2:]:
-            os.remove(log)
+    if len(logs) > 8:
+        for log in logs[2:]:
+            os.remove(f'{LOGS}\\{log}')
     transformador().run()
