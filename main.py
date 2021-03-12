@@ -21,6 +21,7 @@ BASE_DIR = os.getcwd()
 DESIGN = os.path.join(BASE_DIR + '\\design.kv')
 CONFIG_DIR = os.path.join(BASE_DIR + '\\utils')
 CONFIG_FILE = os.path.join(CONFIG_DIR + '\\config.ini')
+LOGS = os.listdir(os.path.join(BASE_DIR + '\\logs'))
 
 from datetime import date
 data=date.today().strftime('%d-%m-%Y')
@@ -49,7 +50,6 @@ class Principal(Screen):
         caminho = os.path.abspath(dlg.askopenfilename(**opcoes))
         filename = caminho.split('\\')
         self.ids.cam_balancete.text = caminho
-        self.ids.nome_balancete.text = filename[-1]
     
     def get_path2(self):
 
@@ -59,7 +59,6 @@ class Principal(Screen):
         caminho = os.path.abspath(dlg.askopenfilename(**opcoes))
         filename = caminho.split('\\')
         self.ids.cam_relatorio.text = caminho
-        self.ids.nome_relatorio.text = filename[-1]
     
     def iniciando(self):
 
@@ -98,7 +97,6 @@ class Coop_rede(Screen):
         caminho = os.path.abspath(dlg.askopenfilename(**opcoes))
         filename = caminho.split('\\')
         self.ids.cam_balancete.text = caminho
-        self.ids.nome_balancete.text = filename[-1]
     
     def get_path2(self):
 
@@ -108,7 +106,6 @@ class Coop_rede(Screen):
         caminho = os.path.abspath(dlg.askopenfilename(**opcoes))
         filename = caminho.split('\\')
         self.ids.cam_relatorio.text = caminho
-        self.ids.nome_relatorio.text = filename[-1]
     
     def iniciando(self):
 
@@ -157,4 +154,7 @@ class transformador(App):
 
 # RODANDO O APLICATIVO
 if __name__ == '__main__':
+    if len(LOGS) > 8:
+        for log in LOGS[2:]:
+            os.remove(log)
     transformador().run()
